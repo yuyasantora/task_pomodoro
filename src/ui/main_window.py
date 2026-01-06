@@ -35,6 +35,32 @@ class MainWindow(QMainWindow):
     def _setup_menu(self):
         menubar = self.menuBar()
         menubar.setNativeMenuBar(False)
+        menubar.setStyleSheet("""
+            QMenuBar {
+                background-color: #f5f5f5;
+                padding: 8px;
+                font-size: 16px;
+            }
+            QMenuBar::item {
+                padding: 8px 16px;
+                margin: 2px;
+                border-radius: 4px;
+            }
+            QMenuBar::item:selected {
+                background-color: #e0e0e0;
+            }
+            QMenu {
+                font-size: 14px;
+                padding: 8px;
+            }
+            QMenu::item {
+                padding: 8px 24px;
+            }
+            QMenu::item:selected {
+                background-color: #2196F3;
+                color: white;
+            }
+        """)
         settings_menu = menubar.addMenu("Settings")
 
         config_action = QAction("Configure Timer", self)
@@ -69,11 +95,33 @@ class MainWindow(QMainWindow):
 
         self.phase_label = QLabel("WORK")
         self.phase_label.setAlignment(Qt.AlignCenter)
-        self.phase_label.setStyleSheet("font-size: 24px; font-weight: bold;")
+        self.phase_label.setStyleSheet("""
+            QLabel {
+                font-size: 36px;
+                font-weight: bold;
+                color: #1565C0;
+                padding: 16px;
+                background-color: #F5F5F5;
+                border: 2px solid #E0E0E0;
+                border-radius: 8px;
+                margin: 8px;
+            }
+        """)
 
         self.task_label = QLabel("No task selected")
         self.task_label.setAlignment(Qt.AlignCenter)
-        self.task_label.setStyleSheet("font-size: 14px; color: #666;")
+        self.task_label.setStyleSheet("""
+            QLabel {
+                font-size: 18px;
+                font-weight: 500;
+                color: #555;
+                padding: 12px;
+                background-color: #FAFAFA;
+                border: 1px solid #E0E0E0;
+                border-radius: 6px;
+                margin: 4px 8px;
+            }
+        """)
 
         self.clock_widget = AnalogClockWidget()
         self.clock_widget.set_total_duration(self.timer.total_seconds)
@@ -106,12 +154,23 @@ class MainWindow(QMainWindow):
         self.phase_label.setText(phase_display.get(phase, phase.upper()))
 
         colors = {
-            "work": "#FF6B6B",
-            "short_break": "#4ECDC4",
-            "long_break": "#45B7D1"
+            "work": "#1565C0",
+            "short_break": "#2E7D32",
+            "long_break": "#00838F"
         }
-        color = colors.get(phase, "#000000")
-        self.phase_label.setStyleSheet(f"font-size: 24px; font-weight: bold; color: {color};")
+        text_color = colors.get(phase, "#000000")
+        self.phase_label.setStyleSheet(f"""
+            QLabel {{
+                font-size: 36px;
+                font-weight: bold;
+                color: {text_color};
+                padding: 16px;
+                background-color: #F5F5F5;
+                border: 2px solid #E0E0E0;
+                border-radius: 8px;
+                margin: 8px;
+            }}
+        """)
 
         self.clock_widget.set_phase(phase)
         self.clock_widget.set_total_duration(self.timer.total_seconds)

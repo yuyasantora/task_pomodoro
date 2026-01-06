@@ -55,25 +55,48 @@ class AnalogClockWidget(QWidget):
         if self.total_seconds == 0:
             return
 
-        elapsed = self.total_seconds - self.remaining_seconds
-        progress = elapsed / self.total_seconds
-        angle = int(progress * 360 * 16)
-
+        remaining_minutes = self.remaining_seconds / 60
         color = self.phase_colors.get(self.current_phase, QColor("#FF6B6B"))
+        start_angle = 90 * 16  # 12時の位置
+
+        # 外側の円（0-60分）
+        outer_remaining = min(remaining_minutes, 60)
+        outer_angle = int((outer_remaining / 60) * 360 * 16)
+
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(color))
-
-        start_angle = 90 * 16
         painter.drawPie(
             int(-radius), int(-radius),
             int(radius * 2), int(radius * 2),
-            start_angle, -angle
+            start_angle, outer_angle  # 正の角度で反時計回りに描画
         )
 
-        painter.setPen(QPen(QColor("#FFFFFF"), 8))
+        # 内側の円の背景（白）
+        inner_radius = radius * 0.65
+        painter.setPen(QPen(QColor("#E0E0E0"), 2))
         painter.setBrush(QBrush(QColor("#FFFFFF")))
-        inner_radius = radius * 0.7
         painter.drawEllipse(QPointF(0, 0), inner_radius, inner_radius)
+
+        # 内側の円（60-120分）
+        if remaining_minutes > 60:
+            inner_remaining = remaining_minutes - 60
+            inner_angle = int((inner_remaining / 60) * 360 * 16)
+
+            lighter_color = QColor(color)
+            lighter_color.setAlpha(180)
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(QBrush(lighter_color))
+            painter.drawPie(
+                int(-inner_radius), int(-inner_radius),
+                int(inner_radius * 2), int(inner_radius * 2),
+                start_angle, inner_angle  # 正の角度で反時計回りに描画
+            )
+
+        # 中央の白い円（時間表示用）
+        center_radius = radius * 0.35
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(QColor("#FFFFFF")))
+        painter.drawEllipse(QPointF(0, 0), center_radius, center_radius)
 
     def _draw_clock_face(self, painter, radius):
         painter.setPen(QPen(QColor("#333333"), 2))

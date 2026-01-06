@@ -71,18 +71,18 @@ class TaskDialog(QDialog):
         self.task_name_input = QLineEdit()
         self.task_name_input.setPlaceholderText("Enter task name...")
 
-        self.target_pomodoros_input = QSpinBox()
-        self.target_pomodoros_input.setRange(1, 100)
-        self.target_pomodoros_input.setValue(4)
-        self.target_pomodoros_input.setSuffix(" pomodoros")
+        self.target_minutes_input = QSpinBox()
+        self.target_minutes_input.setRange(1, 480)
+        self.target_minutes_input.setValue(60)
+        self.target_minutes_input.setSuffix(" minutes")
 
         create_btn = QPushButton("Create Task")
         create_btn.clicked.connect(self.on_create_task)
 
         layout.addWidget(QLabel("Task Name:"))
         layout.addWidget(self.task_name_input)
-        layout.addWidget(QLabel("Target Pomodoros:"))
-        layout.addWidget(self.target_pomodoros_input)
+        layout.addWidget(QLabel("Target Time:"))
+        layout.addWidget(self.target_minutes_input)
         layout.addWidget(create_btn)
         layout.addStretch()
 
@@ -95,7 +95,9 @@ class TaskDialog(QDialog):
 
         for task in tasks:
             progress = task.get_progress() * 100
-            item_text = f"{task.name} ({task.completed_pomodoros}/{task.target_pomodoros}) - {progress:.0f}%"
+            worked_min = task.total_seconds // 60
+            target_min = task.target_seconds // 60
+            item_text = f"{task.name} ({worked_min}/{target_min} min) - {progress:.0f}%"
             item = QListWidgetItem(item_text)
             item.setData(256, task.task_id)
             self.task_list.addItem(item)
@@ -115,8 +117,8 @@ class TaskDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please enter a task name.")
             return
 
-        target_pomodoros = self.target_pomodoros_input.value()
-        task = Task.create(task_name, target_pomodoros)
+        target_minutes = self.target_minutes_input.value()
+        task = Task.create(task_name, target_minutes)
         self.task_storage.save_task(task)
 
         self.selected_task = task

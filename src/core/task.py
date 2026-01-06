@@ -8,8 +8,7 @@ import uuid
 class Task:
     task_id: str
     name: str
-    target_pomodoros: int
-    completed_pomodoros: int = 0
+    target_seconds: int
     total_seconds: int = 0
     created_at: datetime = None
     completed_at: Optional[datetime] = None
@@ -20,16 +19,15 @@ class Task:
             self.created_at = datetime.now()
             
     @classmethod
-    def create(cls, name: str, target_pomodoros: int) -> 'Task':
+    def create(cls, name: str, target_minutes: int) -> 'Task':
         return cls(
             task_id=str(uuid.uuid4()),
             name=name,
-            target_pomodoros=target_pomodoros,
+            target_seconds=target_minutes * 60,
             created_at=datetime.now()
         )
     
     def add_session(self, duration_seconds: int):
-        self.completed_pomodoros += 1
         self.total_seconds += duration_seconds
         
     def mark_completed(self):
@@ -37,9 +35,9 @@ class Task:
         self.completed_at = datetime.now()
         
     def get_progress(self) -> float:
-        if self.target_pomodoros == 0:
+        if self.target_seconds == 0:
             return 0.0
-        return min(1.0, self.completed_pomodoros / self.target_pomodoros)
+        return min(1.0, self.total_seconds / self.target_seconds)
     
     def to_dict(self) -> dict:
         data = asdict(self)

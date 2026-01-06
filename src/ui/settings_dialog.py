@@ -20,7 +20,7 @@ class SettingsDialog(QDialog):
         form_layout = QFormLayout()
 
         self.work_duration_spin = QSpinBox()
-        self.work_duration_spin.setRange(1, 60)
+        self.work_duration_spin.setRange(1, 120)
         self.work_duration_spin.setValue(self.config.work_duration)
         self.work_duration_spin.setSuffix(" min")
         form_layout.addRow("Work Duration:", self.work_duration_spin)
